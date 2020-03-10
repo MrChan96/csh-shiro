@@ -6,8 +6,11 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.crypto.hash.Md2Hash;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +33,7 @@ public class CustomerRealm extends AuthorizingRealm {
      */
     Map<String,String> userMap = new HashMap<String, String>(16);
     {
-        userMap.put("Mark","123456");
+        userMap.put("Mark","283538989cef48f3d7d8a1c1bdf2008f"); //283538989cef48f3d7d8a1c1bdf2008f md5+salt的密文
 
         super.setName("customRealm");
     }
@@ -97,9 +100,11 @@ public class CustomerRealm extends AuthorizingRealm {
             return null;
         }
 
+        // 进行认证
         SimpleAuthenticationInfo simpleAuthenticationInfo
                 = new SimpleAuthenticationInfo("Mark",password,"customRealm");
-
+        // 去盐
+        simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes("Mark"));
 
         return simpleAuthenticationInfo;
     }
@@ -113,5 +118,10 @@ public class CustomerRealm extends AuthorizingRealm {
 
         // 由于只是测试，模拟获取数据库值
         return userMap.get(userName);
+    }
+
+    public static void main(String[] args) {
+        Md5Hash md2Hash = new Md5Hash("123456","Mark");
+        System.out.println(md2Hash.toString());
     }
 }

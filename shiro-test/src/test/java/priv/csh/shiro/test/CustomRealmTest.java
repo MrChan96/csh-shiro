@@ -2,6 +2,7 @@ package priv.csh.shiro.test;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.SimpleAccountRealm;
 import org.apache.shiro.subject.Subject;
@@ -28,11 +29,15 @@ public class CustomRealmTest {
         // 3、引入自定义Realm对象
         CustomerRealm customerRealm = new CustomerRealm();
 
-
-
         // 1、构建SecurityManager环境
         DefaultSecurityManager defaultSecurityManager = new DefaultSecurityManager();
         defaultSecurityManager.setRealm(customerRealm);
+
+        // 9、加密 ：给登录用户进行加密，使其
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
+        hashedCredentialsMatcher.setHashAlgorithmName("md5"); //加密算法名称
+        hashedCredentialsMatcher.setHashIterations(1); //加密次数
+        customerRealm.setCredentialsMatcher(hashedCredentialsMatcher); // 添加加密对象
 
         // 2、主体提交认证请求
         SecurityUtils.setSecurityManager(defaultSecurityManager);
@@ -49,11 +54,11 @@ public class CustomRealmTest {
         System.out.println("isAuthenticated:"+subject.isAuthenticated()); //若匹配成功，返回true
 
         // 7、校验用户角色
-        subject.checkRole("admin");
+        //subject.checkRole("admin");
 
 
         // 8、检验多个角色
-        subject.checkPermission("user:delete");
+        //subject.checkPermission("user:delete");
 
     }
 }
