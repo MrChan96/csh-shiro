@@ -1,9 +1,7 @@
 package priv.csh.config;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -24,6 +22,20 @@ public class UserRealm extends AuthorizingRealm {
     // 认证
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        return null;
+
+
+        //用户名、密码 数据库中取
+        String name = "root";
+        String password = "123456";
+
+        //获取登录的token
+        UsernamePasswordToken userToken = (UsernamePasswordToken) token;
+
+        //登录信息与数据库信息进行匹配
+        if(!userToken.getUsername().equals(name)){
+            return null; //抛出UnknownAccountException
+        }
+        //密码认证 shiro内部操作
+        return new SimpleAuthenticationInfo("",password,"");
     }
 }
