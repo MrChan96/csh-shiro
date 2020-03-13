@@ -43,21 +43,21 @@ public class MyController {
     }
 
     @RequestMapping("/login")
-    public String login(String username,String password,Model model){
+    public String login(String username, String password, Model model) {
         //获取当前的用户
         Subject subject = SecurityUtils.getSubject();
         //封装用户登录的信息
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 
         //执行登录
-        try{
+        try {
             subject.login(token);
             return "index";
-        }catch (UnknownAccountException e){//用户名不存在
-            model.addAttribute("msg","用户名错误");
+        } catch (UnknownAccountException e) {//用户名不存在
+            model.addAttribute("msg", "用户名错误");
             return "login";
-        }catch (IncorrectCredentialsException e){ //密码不存在
-            model.addAttribute("msg","密码错误");
+        } catch (IncorrectCredentialsException e) { //密码不存在
+            model.addAttribute("msg", "密码错误");
             return "login";
         }
     }
@@ -71,7 +71,7 @@ public class MyController {
     UserServiceImpl userService;
 
     @RequestMapping("/getUser")
-    public String GetUser(){
+    public String GetUser() {
         System.out.println(userService.queryUserByName("lisi"));//User(id=2, name=zhangsan, pwd=283538989cef48f3d7d8a1c1bdf2008f, perms=user:update)
 
         return null;
@@ -83,7 +83,18 @@ public class MyController {
      */
     @RequestMapping("/noauth")
     @ResponseBody
-    public String unautorized(){
+    public String unautorized() {
         return "未经授权无法访问此页面";
+    }
+
+    /**
+     * 退出登录
+     */
+    @RequestMapping("/logout")
+    public String logout() {
+        //登出清除缓存
+        Subject currentUser = SecurityUtils.getSubject();
+        currentUser.logout();
+        return "index";
     }
 }
