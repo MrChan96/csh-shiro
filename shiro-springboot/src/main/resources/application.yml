@@ -1,0 +1,14 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/shiro-mybatis?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true&useS
+      SL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  mvc:
+    view:
+      prefix: /WEB-INF/views
+      suffix: .html
+

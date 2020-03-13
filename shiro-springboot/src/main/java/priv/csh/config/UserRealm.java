@@ -2,15 +2,22 @@ package priv.csh.config;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import priv.csh.pojo.User;
+import priv.csh.service.UserServiceImpl;
 
 
 public class UserRealm extends AuthorizingRealm {
+
+    @Autowired
+    UserServiceImpl userService;
 
     // 授权
     @Override
@@ -23,19 +30,20 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 
-
-        //用户名、密码 数据库中取
-        String name = "root";
-        String password = "123456";
-
         //获取登录的token
         UsernamePasswordToken userToken = (UsernamePasswordToken) token;
 
-        //登录信息与数据库信息进行匹配
-        if(!userToken.getUsername().equals(name)){
-            return null; //抛出UnknownAccountException
+        //连接真实数据库
+        User user = userService.queryUserByName(userToken.getUsername());
+
+        if (user == null) { //没有此人
+            return null;//抛出UnknownAccountException
         }
+
         //密码认证 shiro内部操作
-        return new SimpleAuthenticationInfo("",password,"");
+        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo("", user.getPwd(), "");
+
+
+        return simpleAuthenticationInfo;
     }
 }
