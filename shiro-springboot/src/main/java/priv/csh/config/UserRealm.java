@@ -6,6 +6,7 @@ import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
@@ -49,6 +50,13 @@ public class UserRealm extends AuthorizingRealm {
         if (user == null) { //没有此人
             return null;//抛出UnknownAccountException
         }
+
+
+        // 登录成功，获取session
+        Subject currentSubject = SecurityUtils.getSubject();
+        Session session = currentSubject.getSession();
+        session.setAttribute("loginUser",user); //登录成功，将user放入session中
+
 
         //密码认证 shiro内部操作 SimpleAuthenticationInfo方法第一个参数 principal 可保存用户登录的资源，存入user
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, user.getPwd(), "");
