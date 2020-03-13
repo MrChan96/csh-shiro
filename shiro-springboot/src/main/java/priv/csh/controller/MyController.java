@@ -4,10 +4,15 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import priv.csh.config.UserRealm;
+import priv.csh.service.UserServiceImpl;
 
 @Controller
 public class MyController {
@@ -43,6 +48,7 @@ public class MyController {
         Subject subject = SecurityUtils.getSubject();
         //封装用户登录的信息
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+
         //执行登录
         try{
             subject.login(token);
@@ -56,4 +62,28 @@ public class MyController {
         }
     }
 
+
+    /**
+     * 测试方法，测试查询数据库user的方法
+     */
+
+    @Autowired
+    UserServiceImpl userService;
+
+    @RequestMapping("/getUser")
+    public String GetUser(){
+        System.out.println(userService.queryUserByName("lisi"));//User(id=2, name=zhangsan, pwd=283538989cef48f3d7d8a1c1bdf2008f, perms=user:update)
+
+        return null;
+    }
+
+
+    /**
+     * 提示页面：提示用户该页面未授权
+     */
+    @RequestMapping("/noauth")
+    @ResponseBody
+    public String unautorized(){
+        return "未经授权无法访问此页面";
+    }
 }

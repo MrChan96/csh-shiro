@@ -23,11 +23,20 @@ public class ShiroConfig {
         //添加shiro的内置过滤器
         LinkedHashMap<String, String> filterMap = new LinkedHashMap<>();
 
+        //给页面授权：当无权限访问该页面是应该跳转到提示页面，提示用户未授权
+        filterMap.put("/user/add","perms[user:add]");  // 表示拥有add权限才能否访问user/add页面
+        filterMap.put("/user/update","perms[user:update]");
+
+        //若无授权访问页面，需跳转至提示页面
+        bean.setUnauthorizedUrl("/noauth");
+
         //支持通配符的写法，user整个目录下的页面都需要认证
         filterMap.put("/user/*", "authc");
 
         //若无权限访问页面，需跳转至登录页面
         bean.setLoginUrl("/toLogin");
+
+
 
         bean.setFilterChainDefinitionMap(filterMap);
 

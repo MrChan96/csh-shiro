@@ -19,14 +19,24 @@ public class UserRealm extends AuthorizingRealm {
     @Autowired
     UserServiceImpl userService;
 
-    // 授权
+    // 授权 用户访问页面时候默认会到该授权方法里面
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
-        return null;
+        // 授权给用户有权访问页面
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
+        // 获取当前用户登录的信息
+        Subject subject = SecurityUtils.getSubject();
+        User currentUser = (User) subject.getPrincipal(); //User(id=2, name=zhangsan, pwd=283538989cef48f3d7d8a1c1bdf2008f, perms=user:update)
+
+        //设置当前用户的权限
+        info.addStringPermission(currentUser.getPerms());
+
+        return info;
     }
 
-    // 认证
+    // 认证  用户登录到时候默认会到该认证方法里面
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 
@@ -40,8 +50,8 @@ public class UserRealm extends AuthorizingRealm {
             return null;//抛出UnknownAccountException
         }
 
-        //密码认证 shiro内部操作
-        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo("", user.getPwd(), "");
+        //密码认证 shiro内部操作 SimpleAuthenticationInfo方法第一个参数 principal 可保存用户登录的资源，存入user
+        SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(user, user.getPwd(), "");
 
         // 去盐
         simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes("Mark"));
