@@ -43,6 +43,8 @@ public class UserRealm extends AuthorizingRealm {
         //密码认证 shiro内部操作
         SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo("", user.getPwd(), "");
 
+        // 去盐
+        simpleAuthenticationInfo.setCredentialsSalt(ByteSource.Util.bytes("Mark"));
 
         return simpleAuthenticationInfo;
     }

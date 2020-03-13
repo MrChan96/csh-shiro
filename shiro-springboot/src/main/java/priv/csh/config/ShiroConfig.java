@@ -1,5 +1,6 @@
 package priv.csh.config;
 
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -40,6 +41,12 @@ public class ShiroConfig {
 
         //关联UserRealm
         securityManager.setRealm(userRealm);
+
+        // shiro加密
+        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
+        hashedCredentialsMatcher.setHashAlgorithmName("md5"); //加密算法名称
+        hashedCredentialsMatcher.setHashIterations(1); //加密次数
+        userRealm.setCredentialsMatcher(hashedCredentialsMatcher); // 添加加密对象
 
         return securityManager;
     }
